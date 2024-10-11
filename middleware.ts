@@ -1,13 +1,13 @@
-// import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export function middleware(request: Request, response: Response) {
-  // eslint-disable-next-line no-console
-  console.log('request', request);
-  // eslint-disable-next-line no-console
-  console.log('response', response);
+import { middleware1 } from './middlewares';
 
-  // return Response.json({ msg: 'Hello there' });
-  // return NextResponse.redirect(new URL('/', request.url));
+export async function middleware(request: NextRequest, response: NextResponse) {
+  const response1 = await middleware1(request, response);
+
+  if (response1) {
+    return response1;
+  }
 }
 
 export const config = {
