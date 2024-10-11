@@ -1,0 +1,21 @@
+@url  = http://localhost:3000/api
+
+### Get tasks
+GET {{url}}/tasks
+
+### Create task
+POST {{url}}/tasks
+Content-Type: application/json
+
+{
+  "title": "Test task",
+  "content": "Test task content"
+}
+
+### Delete task
+DELETE {{url}}/tasks
+Content-Type: application/json
+
+{
+  "taskId": "7bdfa669-1d1a-4861-b756-3d0c7106cd1d"
+}
