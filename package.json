@@ -9,19 +9,25 @@
     "lint": "next lint --fix"
   },
   "dependencies": {
-    "@prisma/client": "^5.20.0",
-    "@tailwindcss/typography": "^0.5.15",
+    "@clerk/nextjs": "4.26.1",
+    "@prisma/client": "^5.5.2",
+    "@tanstack/react-query": "5.8.1",
+    "@tanstack/react-query-devtools": "5.8.1",
+    "axios": "1.6.1",
     "next": "14.2.14",
+    "openai": "4.14.2",
     "react": "^18",
     "react-dom": "^18",
     "react-hot-toast": "^2.4.1",
+    "react-icons": "4.11.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.15",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "daisyui": "^4.12.11",
+    "daisyui": "3.9.4",
     "eslint": "^8",
     "eslint-config-next": "14.2.14",
     "eslint-config-prettier": "^9.1.0",
@@ -31,7 +37,7 @@
     "eslint-plugin-react": "^7.37.1",
     "eslint-plugin-react-hooks": "^4.6.2",
     "postcss": "^8",
-    "prisma": "^5.20.0",
+    "prisma": "^5.5.2",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }
