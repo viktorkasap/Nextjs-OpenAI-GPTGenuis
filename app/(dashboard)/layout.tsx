@@ -1,1 +1,1 @@
-export { DashboardLayout as default } from '@/app/layouts';
+export { DashboardLayout as default, metadata } from '@/app/layouts/dashboard';

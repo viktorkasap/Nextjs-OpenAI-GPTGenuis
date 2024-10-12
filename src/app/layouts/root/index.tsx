@@ -5,9 +5,9 @@ import { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 
-import Providers from '../providers';
-
 import { Navigation } from '@/widgets/navigation';
+
+import Providers from '../providers';
 
 const geistSans = localFont({
   src: './assets/fonts/GeistVF.woff',
@@ -22,8 +22,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'Create Next App',
-  description: 'Next OpenAI',
+  title: 'GPTGenius',
+  description: 'GPTGenius: Your AI language companion. Powered by OpenAI.',
 };
 
 export function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
@@ -34,6 +34,7 @@ export function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
           <Navigation />
         </header>
         <main className="px-8 py-20 max-w-6xl mx-auto">
+          Root Layout
           {/* Providers uses "use client", and therefore the children forcibly made client components   */}
           <Providers>{children}</Providers>
         </main>
