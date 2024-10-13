@@ -1,3 +1,5 @@
+# Next App Based on FSD
+
 ```bash
 #1
 npx prisma studio

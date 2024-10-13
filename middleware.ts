@@ -1,15 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { authMiddleware } from '@clerk/nextjs';
 
-import { middleware1 } from './middlewares';
-
-export async function middleware(request: NextRequest, response: NextResponse) {
-  const response1 = await middleware1(request, response);
-
-  if (response1) {
-    return response1;
-  }
-}
+export default authMiddleware({
+  publicRoutes: ['/'],
+});
 
 export const config = {
-  matcher: ['/about/:path*'],
+  matcher: [
+    '/((?!.+\\.[\\w]+$|_next).*)',
+    '/',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+  ],
 };

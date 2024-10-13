@@ -5,9 +5,7 @@ import { ReactNode } from 'react';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 
-import { Navigation } from '@/widgets/navigation';
-
-import Providers from '../providers';
+import Providers from './providers';
 
 const geistSans = localFont({
   src: './assets/fonts/GeistVF.woff',
@@ -30,12 +28,8 @@ export function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <header>
-          <Navigation />
-        </header>
-        <main className="px-8 py-20 max-w-6xl mx-auto">
-          Root Layout
-          {/* Providers uses "use client", and therefore the children forcibly made client components   */}
+        {/* <header>Header</header> */}
+        <main>
           <Providers>{children}</Providers>
         </main>
       </body>
