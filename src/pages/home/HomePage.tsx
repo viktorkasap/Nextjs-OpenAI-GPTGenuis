@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-export const Home = () => {
+export const HomePage = () => {
   return (
     <div className="hero min-h-screen bg-base-200">
       <div className="hero-content text-center">
