@@ -6,17 +6,19 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export const generateChatResponse = async (prompt: string) => {
+interface Message {
+  role: 'function' | 'system' | 'user' | 'assistant';
+  content: string;
+}
+
+export const generateChatResponse = async (messages: Message[]) => {
   const completion = await openai.chat.completions.create({
     temperature: 0,
     model: 'gpt-3.5-turbo',
-    messages: [
-      { role: 'system', content: 'You are a helpful assistant.' },
-      { role: 'user', content: prompt },
-    ],
+    messages: [{ role: 'system', content: 'You are a helpful assistant.' }, ...messages],
   });
 
-  return completion.choices[0];
+  return completion.choices[0].message as Message;
 };
 
 /*

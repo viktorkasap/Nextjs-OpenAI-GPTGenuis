@@ -2,22 +2,38 @@
 
 import { FormEvent, useState } from 'react';
 
+import { useMutation } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
+
 import { generateChatResponse } from '@/widgets/chat/api';
+
+interface Message {
+  role: 'function' | 'system' | 'user' | 'assistant';
+  content: string;
+}
 
 export const Chat = () => {
   const [prompt, setPrompt] = useState<string>('');
-  const [messages, setMessages] = useState<{ id: number; content: string | null; role: string; asked: string }[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  const { mutate } = useMutation<Message, Error, Message>({
+    mutationFn: (message) => generateChatResponse([...messages, message]),
+    onSuccess: (answer) => {
+      setMessages((prevMessages) => [...prevMessages, answer]);
+    },
+    onError: (error) => {
+      toast.error(`Error::: ${error.message}`);
+    },
+  });
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (prompt) {
-      const response = await generateChatResponse(prompt);
-      const { content, role } = response.message;
+    const message = { role: 'user', content: prompt } as Message;
 
-      setMessages([...messages, { id: response.index, content, role, asked: prompt }]);
-      setPrompt('');
-    }
+    setMessages((prevMessages) => [...prevMessages, message]);
+    mutate(message);
+    setPrompt('');
   };
 
   return (
@@ -26,15 +42,10 @@ export const Chat = () => {
         <h2 className="text-5xl">Messages</h2>
       </div>
       <div>
-        {messages.map(({ id, content, role, asked }, index) => (
-          <div key={id + index} className="py-4">
-            <p className="pb-2">
-              <strong>You:</strong>
-              <br />
-              <i>{asked}</i>
-            </p>
+        {messages.map(({ content, role }, index) => (
+          <div key={index} className="py-4">
             <p>
-              <strong className="capitalize">{role}:</strong>
+              <strong className="capitalize">{role === 'user' ? 'You' : role}:</strong>
               <br />
               <i>{content}</i>
             </p>
