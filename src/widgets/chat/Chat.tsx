@@ -55,21 +55,7 @@ export const Chat = () => {
       </div>
 
       {/* If it is error */}
-      {isError && (
-        <div role="alert" className="alert alert-error mt-8">
-          <button onClick={reset}>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
-              <path
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </button>
-          <span>{error?.message}</span>
-        </div>
-      )}
+      {isError && <ErrorBox error={error?.message} reset={reset} />}
 
       {/* Is pending */}
       <div className="mt-4 h-8">{isPending ? <span className="loading loading-dots loading-xs"></span> : ''}</div>
@@ -112,6 +98,28 @@ const MessageBox = ({ role, content }: MessageBoxProps) => {
         <br />
         <i>{content}</i>
       </p>
+    </div>
+  );
+};
+
+interface ErrorBoxProps {
+  error: string;
+  reset: () => void;
+}
+const ErrorBox = ({ reset, error }: ErrorBoxProps) => {
+  return (
+    <div role="alert" className="alert alert-error mt-8">
+      <button onClick={reset}>
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+          <path
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      </button>
+      <span>{error}</span>
     </div>
   );
 };
