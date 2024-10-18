@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 
 import { useMutation } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
@@ -13,8 +13,16 @@ interface Message {
 }
 
 export const Chat = () => {
+  const messagesRef = useRef<HTMLDivElement>(null);
   const [prompt, setPrompt] = useState<string>('');
   const [messages, setMessages] = useState<Message[]>([]);
+
+  /* Auto scrolling to the last message */
+  useEffect(() => {
+    if (messagesRef.current) {
+      messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const { mutate, isPending, isError, error, reset } = useMutation<Message, Error, Message>({
     mutationFn: (message) => generateChatResponse([...messages, message]),
@@ -26,6 +34,7 @@ export const Chat = () => {
     },
   });
 
+  /* Submitting */
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -38,12 +47,8 @@ export const Chat = () => {
 
   return (
     <div className="min-h-[calc(100vh-6rem)] grid grid-rows-[1fr,auto]">
-      <div>
-        <h2 className="text-5xl">Messages</h2>
-      </div>
-
       {/* Messages */}
-      <div style={{ maxHeight: '65vh', overflowY: 'auto' }}>
+      <div ref={messagesRef} style={{ overflowY: 'auto' }} className="max-h-[calc(100vh-12rem)] pr-2 scroll">
         {messages.map(({ content, role }, index) => (
           <MessageBox key={index} role={role} content={content} />
         ))}
@@ -101,7 +106,7 @@ const MessageBox = ({ role, content }: MessageBoxProps) => {
   const bgColor = isUser ? 'bg-base-300' : null;
 
   return (
-    <div className={`p-4 rounded-lg ${bgColor}`}>
+    <div className={`mb-4 p-4 rounded-lg ${bgColor}`}>
       <p>
         <strong className="capitalize">{avatar}</strong>
         <br />
