@@ -5,7 +5,7 @@ import { FormEvent, useEffect, useRef, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 
-import { generateChatResponse } from '@/widgets/chat/api';
+import { generateChatResponse } from './api';
 
 interface Message {
   role: 'function' | 'system' | 'user' | 'assistant';

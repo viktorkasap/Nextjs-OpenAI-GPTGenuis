@@ -1,0 +1,1 @@
+export { NewTour } from './NewTour';
