@@ -28,10 +28,8 @@ export const Info = ({ tour }: InfoProps) => {
           <div className="divider divider-accent">Stops</div>
           <ul>
             {stops.map((stop, index) => (
-              <li key={index} className="mb-4 bg-gray-50 p-4 rounded-xl">
-                <p>
-                  {index + 1}) {stop}
-                </p>
+              <li key={index} className="mb-4 bg-base-200 p-4 rounded-xl">
+                <p>• {stop}</p>
               </li>
             ))}
           </ul>

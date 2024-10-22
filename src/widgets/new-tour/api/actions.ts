@@ -26,7 +26,7 @@ const getGenerateQueryMessage = ({ country, state, city }: Destination) => {
     "stops": ["short paragraph on the stop 1", "short paragraph on the stop 2", "short paragraph on the stop 3"]
   }
   If you can't find info on exact ${city}, or ${city} does not exist, ot it's population is less than 1, 
-  or it is not located in the following ${country}, return "null", with no additional characters.`;
+  or it is not located in the following ${country}, return "null", with no additional characters and messages!`;
 };
 
 const baseConfig = {
@@ -44,9 +44,16 @@ export const generateTour = async ({ country, state, city }: Destination) => {
     ],
   });
 
-  const { content } = completion.choices[0].message;
+  try {
+    const { content } = completion.choices[0].message;
 
-  return content ? (JSON.parse(content) as GeneratedTour) : null;
+    return content ? (JSON.parse(content) as GeneratedTour) : null;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.log('Parsed content error:', error);
+
+    return null;
+  }
 };
 
 // Existing

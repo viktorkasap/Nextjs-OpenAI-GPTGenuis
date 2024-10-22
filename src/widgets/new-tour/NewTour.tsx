@@ -10,6 +10,9 @@ import { Destination, Tour as ITour, NewTour as INewTour, GeneratedTour as IGene
 import { Info } from './ui';
 
 export const NewTour = () => {
+  const [noTourMessage, setNoTourMessage] = useState<string>('');
+  const [tour, setTour] = useState<ITour | IGeneratedTour | null>();
+
   const queryClient = useQueryClient();
   const checkExistingTour = useCheckExistingTour();
   const generateTour = useGenerateTour();
@@ -19,12 +22,15 @@ export const NewTour = () => {
   const isError = checkExistingTour.isError || generateTour.isError || createTour.isError;
   const error = checkExistingTour.error || generateTour.error || createTour.error;
 
-  const [tour, setTour] = useState<ITour | IGeneratedTour | null>();
-
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     // 1) Reset default settings
     e.preventDefault();
-    const formElement = e.target as HTMLFormElement;
+    setTour(null);
+    setNoTourMessage('');
+
+    const resetForm = () => {
+      (e.target as HTMLFormElement).reset();
+    };
 
     // 2) Get values
     const formData = new FormData(e.currentTarget);
@@ -35,20 +41,23 @@ export const NewTour = () => {
 
     if (existingTour) {
       setTour(existingTour);
+      resetForm(); // FIXME: 1 Double
     } else {
-      // 4) Generate new tour
+      // 4) Generate new tour from AI
       generateTour.mutateAsync(destination).then((generatedTour) => {
         if (generatedTour) {
           // 5) Create new tour from AI response
           createTour.mutateAsync({ ...generatedTour, poster: '' }).then((createdTour) => {
+            resetForm(); // FIXME: 2 Double
             setTour(createdTour);
             queryClient.invalidateQueries({ queryKey: ['tours'] });
           });
+        } else {
+          // 6) Reporting a non-existent tour
+          setNoTourMessage(`Possibly a typo in the name of the country "${destination.country}" or the city "${destination.city}".`);
         }
       });
     }
-
-    formElement.reset();
   };
 
   return (
@@ -81,20 +90,36 @@ export const NewTour = () => {
         </div>
       </form>
 
-      {/* If it is loading */}
+      {/* 1) If it is loading */}
       {isPending && <span className="loading loading-spinner loading-xs mt-4 mb-4"></span>}
 
-      {/* If it is error */}
+      {/* 2) If it is error */}
       {isError && error && <ErrorBox error={error?.message} reset={generateTour.reset} />}
+
+      {/* 3) If tour hadn't been found */}
+      {Boolean(noTourMessage) && (
+        <div role="alert" className="max-w-2xl alert alert-warning mt-4">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
+          </svg>
+          <span>{noTourMessage}</span>
+        </div>
+      )}
 
       <div className="mt-16"></div>
 
+      {/* 4) Tour information */}
       {tour && <Info tour={tour} />}
     </>
   );
 };
 
-// Use check existing tour
+// Check existing tour
 const useCheckExistingTour = () => {
   return useMutation<ITour | null, Error, Destination>({
     mutationFn: (destination) => getExistingTour(destination),
@@ -108,7 +133,7 @@ const useCheckExistingTour = () => {
   });
 };
 
-// Use generate tour
+// Generate tour
 const useGenerateTour = () => {
   return useMutation<IGeneratedTour | null, Error, Destination>({
     mutationFn: (destination) => generateTourRequest(destination),
@@ -123,7 +148,7 @@ const useGenerateTour = () => {
   });
 };
 
-// Use create tour
+// Create tour
 const useCreateTour = () => {
   return useMutation<ITour | null, Error, INewTour>({
     mutationFn: (newTour) => createTourRequest({ ...newTour }),
