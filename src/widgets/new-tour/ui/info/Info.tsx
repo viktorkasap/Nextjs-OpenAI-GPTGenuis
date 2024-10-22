@@ -1,13 +1,10 @@
-import { Tour } from '../../types';
+import { GeneratedTour, Tour } from '../../types';
 
 interface InfoProps {
-  tour: Tour | undefined | null;
+  tour: Tour | GeneratedTour;
 }
-export const Info = ({ tour }: InfoProps) => {
-  if (!tour) {
-    return null;
-  }
 
+export const Info = ({ tour }: InfoProps) => {
   const { city, country, currencySymbol, currency, flag, title, stops, description } = tour;
 
   return (
@@ -20,8 +17,9 @@ export const Info = ({ tour }: InfoProps) => {
             {city}, {country} {flag}
           </h2>
 
-          <p className="text-sm">Currency: {currency}</p>
-          <p className="text-sm">Symbol: {currencySymbol}</p>
+          <p className="text-sm">
+            Currency: {currency} | {currencySymbol}
+          </p>
 
           <div className="divider divider-accent">Description</div>
 

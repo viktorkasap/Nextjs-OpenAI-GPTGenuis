@@ -2,7 +2,9 @@
 
 import OpenAI from 'openai';
 
-import { Destination, Tour } from '../types';
+import { db } from '@/shared/db';
+
+import { Destination, NewTour, GeneratedTour, Tour } from '../types';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -32,21 +34,6 @@ const baseConfig = {
   model: 'gpt-3.5-turbo',
 };
 
-// Existing
-export const getExistingTour = async ({ country, state, city }: Destination) => {
-  const completion = await openai.chat.completions.create({
-    ...baseConfig,
-    messages: [
-      { role: 'system', content: 'You are a tour guide.' },
-      { role: 'user', content: getGenerateQueryMessage({ country, state, city }) },
-    ],
-  });
-
-  const { content } = completion.choices[0].message;
-
-  return content ? (JSON.parse(content) as Tour) : null;
-};
-
 // Generate
 export const generateTour = async ({ country, state, city }: Destination) => {
   const completion = await openai.chat.completions.create({
@@ -59,20 +46,19 @@ export const generateTour = async ({ country, state, city }: Destination) => {
 
   const { content } = completion.choices[0].message;
 
-  return content ? (JSON.parse(content) as Tour) : null;
+  return content ? (JSON.parse(content) as GeneratedTour) : null;
+};
+
+// Existing
+export const getExistingTour = async ({ country, city }: Omit<Destination, 'state'>): Promise<Tour | null> => {
+  const tour = await db.tour.findUnique({ where: { country_city: { country, city } } });
+
+  return tour;
 };
 
 // Create
-export const createTour = async ({ country, state, city }: Destination) => {
-  const completion = await openai.chat.completions.create({
-    ...baseConfig,
-    messages: [
-      { role: 'system', content: 'You are a helpful assistant.' },
-      { role: 'user', content: getGenerateQueryMessage({ country, state, city }) },
-    ],
-  });
+export const createTour = async ({ ...newTour }: NewTour): Promise<Tour | null> => {
+  const tour = await db.tour.create({ data: { ...newTour } });
 
-  const { content } = completion.choices[0].message;
-
-  return content ? (JSON.parse(content) as Tour) : null;
+  return tour;
 };

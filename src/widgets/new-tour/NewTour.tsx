@@ -1,15 +1,16 @@
 'use client';
 
-import { FormEvent } from 'react';
+import { FormEvent, useState } from 'react';
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 
 import { getExistingTour, generateTour as generateTourRequest, createTour as createTourRequest } from './api';
-import { Destination, Tour } from './types';
+import { Destination, Tour as ITour, NewTour as INewTour, GeneratedTour as IGeneratedTour } from './types';
 import { Info } from './ui';
 
 export const NewTour = () => {
+  const queryClient = useQueryClient();
   const checkExistingTour = useCheckExistingTour();
   const generateTour = useGenerateTour();
   const createTour = useCreateTour();
@@ -18,13 +19,36 @@ export const NewTour = () => {
   const isError = checkExistingTour.isError || generateTour.isError || createTour.isError;
   const error = checkExistingTour.error || generateTour.error || createTour.error;
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const [tour, setTour] = useState<ITour | IGeneratedTour | null>();
 
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    // 1) Reset default settings
+    e.preventDefault();
+    const formElement = e.target as HTMLFormElement;
+
+    // 2) Get values
     const formData = new FormData(e.currentTarget);
     const destination = Object.fromEntries(formData) as unknown as Destination;
-    generateTour.mutate(destination);
-    e.currentTarget.reset();
+
+    // 3) Check existing tour
+    const existingTour = await getExistingTour(destination);
+
+    if (existingTour) {
+      setTour(existingTour);
+    } else {
+      // 4) Generate new tour
+      generateTour.mutateAsync(destination).then((generatedTour) => {
+        if (generatedTour) {
+          // 5) Create new tour from AI response
+          createTour.mutateAsync({ ...generatedTour, poster: '' }).then((createdTour) => {
+            setTour(createdTour);
+            queryClient.invalidateQueries({ queryKey: ['tours'] });
+          });
+        }
+      });
+    }
+
+    formElement.reset();
   };
 
   return (
@@ -42,7 +66,7 @@ export const NewTour = () => {
             placeholder="Unites States *"
             className="input input-bordered join-item w-full"
           />
-          <input type="text" name="state" placeholder="Oregon" disabled={isPending} className="input input-bordered join-item w-full" />
+          <input type="text" name="state" placeholder="Arizona" disabled={isPending} className="input input-bordered join-item w-full" />
           <input
             required
             type="text"
@@ -65,18 +89,18 @@ export const NewTour = () => {
 
       <div className="mt-16"></div>
 
-      <Info tour={generateTour.data} />
+      {tour && <Info tour={tour} />}
     </>
   );
 };
 
 // Use check existing tour
 const useCheckExistingTour = () => {
-  return useMutation<Tour | null, Error, Destination>({
+  return useMutation<ITour | null, Error, Destination>({
     mutationFn: (destination) => getExistingTour(destination),
     onSuccess: (tour) => {
       // eslint-disable-next-line no-console
-      console.log('existing', tour);
+      console.log('Existing tour:', tour);
     },
     onError: () => {
       toast.error(<div className="">No matching city found...</div>);
@@ -86,11 +110,11 @@ const useCheckExistingTour = () => {
 
 // Use generate tour
 const useGenerateTour = () => {
-  return useMutation<Tour | null, Error, Destination>({
+  return useMutation<IGeneratedTour | null, Error, Destination>({
     mutationFn: (destination) => generateTourRequest(destination),
     onSuccess: (data) => {
       // eslint-disable-next-line no-console
-      console.log('Generated', data);
+      console.log('Generated tour:', data);
     },
     onError: () => {
       toast.error(<div className="">No matching city found...</div>);
@@ -101,11 +125,11 @@ const useGenerateTour = () => {
 
 // Use create tour
 const useCreateTour = () => {
-  return useMutation<Tour | null, Error, Destination>({
-    mutationFn: (destination) => createTourRequest(destination),
+  return useMutation<ITour | null, Error, INewTour>({
+    mutationFn: (newTour) => createTourRequest({ ...newTour }),
     onSuccess: (data) => {
       // eslint-disable-next-line no-console
-      console.log('created', data);
+      console.log('Created tour:', data);
     },
     onError: () => {
       toast.error(<div className="">Something went wrong...</div>);
