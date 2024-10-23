@@ -4,8 +4,6 @@ import { db } from '@/shared/db';
 
 import { Tour } from '../types';
 
-// Existing
-
 interface GetAllTours {
   searchValue?: string;
 }
