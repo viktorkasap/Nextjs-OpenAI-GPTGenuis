@@ -21,6 +21,7 @@
     "react-dom": "^18",
     "react-hot-toast": "^2.4.1",
     "react-icons": "4.11.0",
+    "usehooks-ts": "^3.1.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

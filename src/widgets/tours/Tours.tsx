@@ -6,7 +6,7 @@ import { ToursList, TourCard } from './ui';
 export const Tours = async () => {
   const queryClient = new QueryClient();
   await queryClient.prefetchQuery({
-    queryKey: ['tours'],
+    queryKey: ['tours', ''],
     queryFn: () => getAllTours(),
   });
 

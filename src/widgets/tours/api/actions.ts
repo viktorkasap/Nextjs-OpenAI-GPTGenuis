@@ -7,11 +7,11 @@ import { Tour } from '../types';
 // Existing
 
 interface GetAllTours {
-  country?: string;
-  city?: string;
+  searchValue?: string;
 }
-export const getAllTours = async ({ country, city }: GetAllTours = {}): Promise<Tour[] | []> => {
-  if (!country && !city) {
+
+export const getAllTours = async ({ searchValue }: GetAllTours = {}): Promise<Tour[] | []> => {
+  if (!searchValue) {
     const result = await db.tour.findMany({ orderBy: { city: 'asc' } });
 
     // eslint-disable-next-line no-console
@@ -23,7 +23,7 @@ export const getAllTours = async ({ country, city }: GetAllTours = {}): Promise<
   const searchResult = await db.tour.findMany({
     orderBy: { city: 'asc' },
     where: {
-      OR: [{ country: { contains: country } }, { city: { contains: city } }],
+      OR: [{ country: { contains: searchValue, mode: 'insensitive' } }, { city: { contains: searchValue, mode: 'insensitive' } }],
     },
   });
 
