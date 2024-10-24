@@ -10,7 +10,7 @@ export const TourCard = ({ id, country, city, flag, title }: Tour) => {
   console.log('TOUR', country);
 
   return (
-    <Link href={`/tours/${id}s`}>
+    <Link href={`/tours/${id}`}>
       <div className="card card-compact rounded-xl bg-base-100">
         <div className="card-body items-center text-center">
           <h2 className="card-title text-current">

@@ -56,6 +56,26 @@ export const generateTour = async ({ country, state, city }: Destination) => {
   }
 };
 
+// Generate Tour Poster
+export const createTourPoster = async ({ country, state, city }: Destination) => {
+  const result = await openai.images.generate({
+    prompt: `a panoramic view of the ${country} ${state}, ${city}`,
+    n: 1,
+    size: '512x512',
+  });
+
+  try {
+    const { url } = result.data[0];
+
+    return url;
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.log('Generate tour view error:', error);
+
+    return '';
+  }
+};
+
 // Existing
 export const getExistingTour = async ({ country, city }: Omit<Destination, 'state'>): Promise<Tour | null> => {
   const tour = await db.tour.findUnique({ where: { country_city: { country, city } } });

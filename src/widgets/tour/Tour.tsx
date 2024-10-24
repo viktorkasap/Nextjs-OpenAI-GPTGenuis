@@ -1,7 +1,8 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
-import { getSingleTour } from './api';
+import { getSingleTour, getImageUrl } from './api';
 
 interface TourProps {
   params: {
@@ -15,6 +16,8 @@ export const Tour = async ({ params }: TourProps) => {
   if (!tour) {
     redirect('/tours');
   }
+
+  const unsplashData = await getImageUrl(`city+${tour.city}`);
 
   const { city, country, currencySymbol, currency, flag, title, stops, description } = tour;
 
@@ -35,6 +38,19 @@ export const Tour = async ({ params }: TourProps) => {
       </div>
 
       {/* Content */}
+      {unsplashData && (
+        <div>
+          <Image
+            priority
+            alt={city}
+            width={300}
+            height={300}
+            src={unsplashData.results[0].urls.regular}
+            className="rounded-xl shadow-xl mb-4 h-96 w-96 object-cover"
+          />
+        </div>
+      )}
+
       <div className="max-w-2xl">
         <h1 className="text-4xl font-semibold mb-4">{title}</h1>
 
