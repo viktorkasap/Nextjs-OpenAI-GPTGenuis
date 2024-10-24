@@ -1,0 +1,37 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // postgresql | MongoDB | MySQL
+  url      = env("DATABASE_URL")
+}
+
+// Example Model - https://www.prisma.io/docs/orm/prisma-schema/data-model/models
+// Migration Init - npx prisma migrate dev --name init
+// Migration Update - npx prisma migrate dev --name <updated name>
+
+model Tour {
+  id             String   @id @default(uuid())
+  country        String
+  state          String?  @default("")
+  city           String
+  flag           String
+  currency       String
+  currencySymbol String
+  title          String
+  description    String   @db.Text
+  poster         String?  @default("") @db.Text
+  stops          String[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([country, city])
+  @@index([country, city])
+}
