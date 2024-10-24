@@ -1,4 +1,4 @@
-import { dehydrate, HydrationBoundary, QueryClient, useQueryClient } from '@tanstack/react-query';
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 
 import { Tours } from '@/widgets/tours';
 

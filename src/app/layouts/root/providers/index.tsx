@@ -1,6 +1,6 @@
 'use client';
 
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, Suspense } from 'react';
 
 import { ClerkProvider } from '@clerk/nextjs';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -17,13 +17,15 @@ const queryClient = new QueryClient({
 
 const Providers = ({ children }: PropsWithChildren) => {
   return (
-    <ClerkProvider>
-      <QueryClientProvider client={queryClient}>
-        <Toaster />
-        {children}
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </ClerkProvider>
+    <Suspense>
+      <ClerkProvider>
+        <QueryClientProvider client={queryClient}>
+          <Toaster />
+          {children}
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+      </ClerkProvider>
+    </Suspense>
   );
 };
 

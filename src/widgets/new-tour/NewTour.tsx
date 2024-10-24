@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, Suspense, useState } from 'react';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
@@ -61,7 +61,7 @@ export const NewTour = () => {
   };
 
   return (
-    <>
+    <Suspense>
       <form onSubmit={handleSubmit} className="max-w-2xl">
         <h2 className="mb-4">Select your destination</h2>
 
@@ -115,7 +115,7 @@ export const NewTour = () => {
 
       {/* 4) Tour information */}
       {tour && <Info tour={tour} />}
-    </>
+    </Suspense>
   );
 };
 
