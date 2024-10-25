@@ -10,7 +10,7 @@
     "standard",
     "prettier",
     "plugin:prettier/recommended"
-    // plugin:jsx-a11y/recommended
+    // plugin:jsx-a11y/recommended | pnpm add -D eslint-plugin-jsx-a11y
   ],
   "rules": {
     "jsx-a11y/anchor-has-content": "off",
